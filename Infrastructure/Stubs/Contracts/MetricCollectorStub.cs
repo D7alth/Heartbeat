@@ -6,13 +6,23 @@ namespace Heartbeat.Producer.Infrastructure.Stubs.Contracts;
 public class MetricCollectorStub : IMetricCollector
 {
     private readonly Random _random = new();
-    public string Name { get; }
 
     // TODO: Create real implementation using System.Management
-    public Task<T> CollectMetricsAsync<T>(CancellationToken cancellationToken)
+    public async Task<T> CollectMetricsAsync<T>(
+        string metricType,
+        CancellationToken cancellationToken = default
+    )
     {
-        // TODO: Create a logical to calls to method based on name property
-        throw new NotImplementedException();
+        var metricTask = metricType switch
+        {
+            nameof(CpuMetricsModel) => CpuCollectorAsync(cancellationToken) as Task<T>,
+            nameof(DiskMetricsModel) => DiskCollectorAsync(cancellationToken) as Task<T>,
+            nameof(NetworkMetricsModel) => MemoryCollectorAsync(cancellationToken) as Task<T>,
+            _ => null,
+        };
+        if (metricTask is null)
+            return default!;
+        return await metricTask;
     }
 
     private async Task<CpuMetricsModel> CpuCollectorAsync(
