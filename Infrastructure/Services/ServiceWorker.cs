@@ -16,6 +16,7 @@ internal sealed class ServiceWorker(
     {
         while (true)
         {
+            await Task.Delay(1_000, stoppingToken);
             var eventModel = await GetMetricsHelper.GetMetricsAsync(metricCollector, stoppingToken);
             logger.LogInformation(
                 @$"Id: {eventModel.Id} 
@@ -26,7 +27,6 @@ internal sealed class ServiceWorker(
                 Disk Metrics: {eventModel.EventData.DiskMetrics}
                 Network Metrics: {eventModel.EventData.NetworkMetrics}"
             );
-            await Task.Delay(10_000, stoppingToken);
             try
             {
                 var result = await publish.PublishEventAsync(eventModel, stoppingToken);
