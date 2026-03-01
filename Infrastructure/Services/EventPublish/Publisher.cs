@@ -16,7 +16,7 @@ public class Publisher(PublisherOptions options) : IPublisher
     private ProducerConfig GetProducerConfig() =>
         new()
         {
-            BootstrapServers = options.BootstrapServe,
+            BootstrapServers = options.BootstrapServer,
             ClientId = options.ClientId,
             SecurityProtocol = GetSecurityProtocol(options.SecurityProtocol),
             Acks = GetAcks(options.Acks),
