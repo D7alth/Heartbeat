@@ -1,6 +1,7 @@
 using Heartbeat.Producer.Core.Contracts;
+using Heartbeat.Producer.Core.Contracts.Messaging;
 using Heartbeat.Producer.Core.Helpers.GetMetrics;
-using Heartbeat.Producer.Infrastructure.Services.EventPublish;
+using Heartbeat.Producer.Core.Models.Events;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -29,7 +30,8 @@ internal sealed class ServiceWorker(
             );
             try
             {
-                var result = await publish.PublishEventAsync(eventModel, stoppingToken);
+                var eventData = SerializeEvent(eventModel);
+                var result = await publish.PublishEventAsync("teste", eventData, stoppingToken);
                 if (result)
                 {
                     logger.LogInformation(
@@ -51,4 +53,7 @@ internal sealed class ServiceWorker(
             }
         }
     }
+
+    private static byte[] SerializeEvent(EventModel eventModel) =>
+        System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(eventModel);
 }
