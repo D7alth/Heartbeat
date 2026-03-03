@@ -1,12 +1,12 @@
 ﻿using Heartbeat.Producer.Core.Contracts;
+using Heartbeat.Producer.Core.Contracts.Messaging;
+using Heartbeat.Producer.Infrastructure.Messaging;
+using Heartbeat.Producer.Infrastructure.Messaging.Connection;
 using Heartbeat.Producer.Infrastructure.Services;
-using Heartbeat.Producer.Infrastructure.Services.EventPublish;
 using Heartbeat.Producer.Infrastructure.Stubs.Contracts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 var builder = new HostApplicationBuilder();
 builder
@@ -16,16 +16,16 @@ builder
     .AddEnvironmentVariables();
 
 builder.Services.AddSingleton<IMetricCollector, MetricCollectorStub>();
-builder.Services.Configure<PublisherOptions>(builder.Configuration.GetSection("PublisherOptions"));
-builder.Services.AddScoped<IPublisher>(opt => new Publisher(
-    opt.GetRequiredService<IOptions<PublisherOptions>>().Value
-));
-builder.Services.AddHostedService<ServiceWorker>(opt =>
-    new(
-        opt.GetRequiredService<IMetricCollector>(),
-        opt.GetRequiredService<IPublisher>(),
-        opt.GetRequiredService<ILogger<ServiceWorker>>()
-    )
+
+builder.Services.Configure<KafkaConfigurationOptions>(
+    builder.Configuration.GetSection("KafkaConfigurationOptions")
 );
+builder.Services.AddSingleton<IKafkaConnectionManager, KafkaConnectionManager>();
+builder.Services.AddSingleton<IPublisher, KafkaPublisher>();
+builder.Services.AddHostedService<KafkaConnectionInitializer>();
+builder.Services.AddHostedService<ServiceWorker>();
+
 var app = builder.Build();
+app.Run();
+
 app.Run();
