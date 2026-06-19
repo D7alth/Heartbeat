@@ -1,97 +1,54 @@
-# Heartbeat - Sistema de Monitoramento de Métricas
+# Heartbeat
 
-## 📋 Sobre o Projeto
-
-O **Heartbeat** é um projeto de demonstração de um sistema de monitoramento de métricas de servidores, utilizando uma arquitetura baseada em eventos com Apache Kafka. 
-O objetivo é coletar métricas como uso de CPU, espaço em disco e tráfego de rede, processá-las e tomar decisões baseadas nessas informações.
-
-
-## Arquitetura
+A lightweight IoT sensor digest built with .NET 8 Worker Services, MQTT, and InfluxDB.  
+Listens to sensor events from ESP32 and Arduino devices, persists readings as time-series data, and exposes them to a Grafana dashboard.
 
 ```
-┌─────────────────────┐
-│ Heartbeat.Producer  │  ──►  Coleta métricas do servidor
-└──────────┬──────────┘
-           │
-           │ (publica evento)
-           ▼
-      ┌─────────┐
-      │  Kafka  │
-      │  Topic  │  ──►  Tópico de métricas brutas
-      └────┬────┘
-     Topic: Analyzer
-           │
-           ▼
-    ┌──────────────┐
-    │  Heartbeat   │
-    │  .Analyzer   │  ──►  Analisa e decide o destino
-    └──────┬───────┘
-           │
-           │ (republica evento)
-           ▼
-      ┌─────────┐
-      │  Kafka  │  ──►  Tópicos específicos
-      └────┬────┘
-           │
-           ├─────────────────────┐
-           ▼                     ▼
-    ┌──────────────┐     ┌──────────────┐
-    │  Heartbeat   │     │  Heartbeat   │
-    │  .Alerting   │     │  .Storage    │
-    └──────────────┘     └──────────────┘
-    Topic: alerts        Topic: storage
-    Envia alertas        Persiste no banco
+[ESP32 / Arduino] → MQTT → Mosquitto → Heartbeat → InfluxDB → Grafana
 ```
 
-### Fluxo de Dados (Orquestração)
+---
 
-1. **Heartbeat.Producer**: Coleta métricas (CPU, disco, rede) do servidor e publica no Kafka
-2. **Kafka (Tópico de Entrada)**: Recebe os eventos brutos de métricas
-3. **Heartbeat.Analyzer**: Consome do tópico, analisa as métricas e decide o destino:
-   - Se métricas estão **críticas** → republica no tópico de alertas
-   - Se métricas estão **normais** → republica no tópico de storage
-4. **Kafka (Tópicos de Saída)**: Distribui os eventos para os tópicos específicos
-5. **Heartbeat.Alerting**: Escuta o tópico de alertas e dispara notificações
-6. **Heartbeat.Storage**: Escuta o tópico de storage e persiste os snapshots no banco de dados
+## Stack
 
-## 🚀 Heartbeat.Producer
+- **Runtime** — .NET 8 Worker Service
+- **Messaging** — MQTT via Mosquitto
+- **Storage** — InfluxDB 2.x
+- **Dashboard** — Grafana
 
-Este repositório contém o **Producer**, uma aplicação console .NET que executa como background service.
+---
 
-### Funcionalidades (TODO)
+## Getting Started
 
-- Coleta automática de métricas de servidor
-- Publicação de eventos no Apache Kafka
-- Execução contínua como serviço de background
-- Suporte a containerização com Docker
+### Prerequisites
 
-### Métricas Coletadas
+- .NET 8 SDK
+- Docker and Docker Compose
 
-- **CPU**: Uso de processador
-- **Disco**: Espaço utilizado e disponível
-- **Rede**: Tráfego de entrada/saída
-
-> **Nota**: A implementação atual utiliza dados mockados para testes. A coleta de métricas reais do servidor será implementada em futuras versões.
-
-## 🛠️ Tecnologias
-
-### Heartbeat.Producer
-- **.NET 10.0** - Framework principal
-- **C#** - Linguagem de programação
-- **Confluent.Kafka** - Cliente Kafka para .NET
-- **Microsoft.Extensions.Hosting** - Background Services
-- **Docker** - Containerização
-
-## 📦 Instalação e Execução
-
-### Pré-requisitos
-
-- .NET 10.0 SDK
-- Docker e Docker Compose
-
-### Executar Localmente
+### Run
 
 ```bash
-docker compose -f compose.yaml up -d
+# Start infrastructure
+docker compose up -d
+
+# Set InfluxDB token
+dotnet user-secrets set "Influx:Token" "your-token-here"
+
+# Run
+dotnet run
 ```
 
+---
+
+## Roadmap
+
+- [ ] Kafka integration for event streaming and external notifications
+- [ ] Device health panel (uptime, RSSI, firmware version)
+- [ ] Alert rules for abnormal readings
+- [ ] Support for additional sensor types
+
+---
+
+## License
+
+MIT
