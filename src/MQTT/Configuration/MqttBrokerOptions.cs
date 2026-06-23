@@ -1,4 +1,4 @@
-namespace src.MQTT;
+namespace src.MQTT.Configuration;
 
 public sealed class MqttBrokerOptions
 {
