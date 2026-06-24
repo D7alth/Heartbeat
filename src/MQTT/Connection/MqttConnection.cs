@@ -7,8 +7,10 @@ using src.MQTT.Configuration;
 
 namespace src.MQTT.Connection;
 
-public sealed class MqttConnection(IOptions<MqttBrokerOptions> options, ILogger logger)
-    : IMqttConnectionManager
+public sealed class MqttConnection(
+    IOptions<MqttBrokerOptions> options,
+    ILogger<MqttConnection> logger
+) : IMqttConnectionManager
 {
     private readonly MqttBrokerOptions _valueOptions = options.Value;
 
