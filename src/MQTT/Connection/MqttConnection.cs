@@ -1,5 +1,3 @@
-using System.Security.Authentication;
-using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MQTTnet;
@@ -14,7 +12,7 @@ public sealed class MqttConnection(
 {
     private readonly MqttBrokerOptions _valueOptions = options.Value;
 
-    public async Task<IMqttClient> TryGetConnection(CancellationToken cancellationToken)
+    public async Task<IMqttClient?> TryGetConnection(CancellationToken cancellationToken)
     {
         try
         {
@@ -22,16 +20,12 @@ public sealed class MqttConnection(
             var mqttClient = factory.CreateMqttClient();
             var options = GetBuiltOptions();
             var connection = await mqttClient.ConnectAsync(options, cancellationToken);
-            if (connection.ResultCode == MqttClientConnectResultCode.Success)
-            {
-                await mqttClient.SubscribeAsync(
-                    topic: _valueOptions.Topic, // TODO: Create a specific method to subscribe client to a topic
-                    cancellationToken: cancellationToken
-                );
-                return mqttClient;
-            }
-            logger.LogError("Cannot be connect, throwing an exception");
-            throw new Exception(connection.ResponseInformation);
+            if (connection.ResultCode != MqttClientConnectResultCode.Success) return null;
+            await mqttClient.SubscribeAsync(
+                topic: _valueOptions.Topic, // TODO: Create a specific method to subscribe client to a topic
+                cancellationToken: cancellationToken
+            );
+            return mqttClient;
         }
         catch (Exception e)
         {
@@ -45,19 +39,5 @@ public sealed class MqttConnection(
             .WithTcpServer(_valueOptions.Broker, _valueOptions.Port)
             .WithCredentials(_valueOptions.Username, _valueOptions.Password)
             .WithClientId(_valueOptions.ClientId)
-            .WithCleanSession()
-            .WithTlsOptions(builder =>
-            {
-                builder.UseTls();
-                builder.WithSslProtocols(SslProtocols.Tls12);
-                builder.WithClientCertificates(
-                    new List<X509Certificate2>
-                    {
-                        X509CertificateLoader.LoadCertificateFromFile(
-                            _valueOptions.TslCertificatePath
-                        ),
-                    }
-                );
-            })
             .Build();
 }
