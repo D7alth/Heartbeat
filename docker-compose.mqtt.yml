@@ -1,0 +1,32 @@
+services:
+  emqx:
+    image: emqx:5
+    container_name: emqx
+    restart: unless-stopped
+    ports:
+      - "1883:1883"   
+      - "8883:8883"   
+      - "8083:8083"   
+      - "18083:18083" 
+    environment:
+      EMQX_NODE_NAME: emqx@localhost
+      EMQX_DASHBOARD__DEFAULT_USERNAME: admin
+      EMQX_DASHBOARD__DEFAULT_PASSWORD: public
+    volumes:
+      - emqx-data:/opt/emqx/data
+      - emqx-log:/opt/emqx/log
+    networks:
+      - heartbeat-network
+    healthcheck:
+      test: ["CMD", "emqx", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  emqx-data:
+  emqx-log:
+
+networks:
+  heartbeat-network:
+    driver: bridge
