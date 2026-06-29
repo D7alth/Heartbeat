@@ -9,6 +9,7 @@ namespace src.MQTT;
 public sealed class MqttBrokerService(IMqttConnectionManager connectionManager) : BackgroundService
 {
     private static IMqttClient? _mqttClient;
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         while (!stoppingToken.IsCancellationRequested)
@@ -18,12 +19,10 @@ public sealed class MqttBrokerService(IMqttConnectionManager connectionManager) 
                 _mqttClient ??= await connectionManager.TryGetConnection(stoppingToken);
                 if (_mqttClient is null)
                     return;
-                _mqttClient.ApplicationMessageReceivedAsync += e =>
+                _mqttClient.ApplicationMessageReceivedAsync += async e =>
                 {
-                    Console.WriteLine(
-                        $"message recived {ParseBytesToUtf8(e.ApplicationMessage.Payload)}"
-                    );
-                    return Task.CompletedTask;
+                    var message = MessageFactory.CreateMessageFromMqtt(e);
+                    await e.AcknowledgeAsync(stoppingToken);
                 };
             }
             catch (Exception e)
@@ -33,7 +32,4 @@ public sealed class MqttBrokerService(IMqttConnectionManager connectionManager) 
             }
         }
     }
-
-    private static string ParseBytesToUtf8(ReadOnlySequence<byte> byteSpan) =>
-        Encoding.UTF8.GetString(byteSpan);
 }
