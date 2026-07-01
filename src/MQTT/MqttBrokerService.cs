@@ -1,5 +1,3 @@
-using System.Buffers;
-using System.Text;
 using Microsoft.Extensions.Hosting;
 using MQTTnet;
 using src.MQTT.Connection;
