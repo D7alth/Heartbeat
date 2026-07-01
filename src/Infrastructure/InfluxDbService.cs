@@ -1,13 +1,15 @@
-using InfluxDB.Client;
 using InfluxDB.Client.Api.Domain;
 using Microsoft.Extensions.Options;
 using src.Contracts;
+using src.Infrastructure.Connection;
 using src.Models;
 
 namespace src.Infrastructure;
 
-public class InfluxReadingRepository(InfluxDBClient influxDbClient, IOptions<InfluxOptions> options)
-    : IReadingRepository
+public sealed class InfluxDbService(
+    IDbClientFactory dbClientFactory,
+    IOptions<InfluxOptions> options
+) : IReadingRepository
 {
     private InfluxOptions InfluxOptions => options.Value;
 
@@ -15,6 +17,7 @@ public class InfluxReadingRepository(InfluxDBClient influxDbClient, IOptions<Inf
     {
         try
         {
+            var influxDbClient = dbClientFactory.Create();
             var writeApi = influxDbClient.GetWriteApiAsync();
             await writeApi.WriteMeasurementAsync(
                 humidityReading,
