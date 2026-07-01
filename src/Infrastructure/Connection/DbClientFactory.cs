@@ -3,9 +3,7 @@ using Microsoft.Extensions.Options;
 
 namespace src.Infrastructure.Connection;
 
-public sealed class InfluxDbClientFactory(IOptions<InfluxOptions> options)
-    : IInfluxDbClientFactory,
-        IDisposable
+public sealed class DbClientFactory(IOptions<InfluxOptions> options) : IDbClientFactory, IDisposable
 {
     private readonly InfluxOptions _influxOptions = options.Value;
     private InfluxDBClient? _dbClient;
