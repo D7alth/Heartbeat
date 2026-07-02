@@ -1,6 +1,6 @@
 using InfluxDB.Client;
 
-namespace src.Infrastructure.Connection;
+namespace src.Infrastructure.Persistence.Connection;
 
 public interface IDbClientFactory
 {

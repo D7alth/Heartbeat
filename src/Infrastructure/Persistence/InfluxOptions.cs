@@ -1,4 +1,4 @@
-namespace src.Infrastructure;
+namespace src.Infrastructure.Persistence;
 
 public sealed class InfluxOptions
 {

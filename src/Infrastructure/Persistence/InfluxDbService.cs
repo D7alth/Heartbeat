@@ -1,10 +1,10 @@
 using InfluxDB.Client.Api.Domain;
 using Microsoft.Extensions.Options;
 using src.Contracts;
-using src.Infrastructure.Connection;
+using src.Infrastructure.Persistence.Connection;
 using src.Models;
 
-namespace src.Infrastructure;
+namespace src.Infrastructure.Persistence;
 
 public sealed class InfluxDbService(
     IDbClientFactory dbClientFactory,

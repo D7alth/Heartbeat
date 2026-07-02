@@ -1,7 +1,7 @@
 using InfluxDB.Client;
 using Microsoft.Extensions.Options;
 
-namespace src.Infrastructure.Connection;
+namespace src.Infrastructure.Persistence.Connection;
 
 public sealed class DbClientFactory(IOptions<InfluxOptions> options) : IDbClientFactory, IDisposable
 {
