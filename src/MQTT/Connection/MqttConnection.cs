@@ -14,13 +14,15 @@ public sealed class MqttConnection(
 
     public async Task<IMqttClient?> TryGetConnection(CancellationToken cancellationToken)
     {
+        //TODO: Decompose this class into a some other classes, I must follow SPR.
         try
         {
             var factory = new MqttClientFactory();
             var mqttClient = factory.CreateMqttClient();
             var options = GetBuiltOptions();
             var connection = await mqttClient.ConnectAsync(options, cancellationToken);
-            if (connection.ResultCode != MqttClientConnectResultCode.Success) return null;
+            if (connection.ResultCode != MqttClientConnectResultCode.Success)
+                return null;
             await mqttClient.SubscribeAsync(
                 topic: _valueOptions.Topic, // TODO: Create a specific method to subscribe client to a topic
                 cancellationToken: cancellationToken
