@@ -1,6 +1,6 @@
 using MQTTnet;
 
-namespace src.MQTT.Connection;
+namespace src.Worker.MQTT.Connection;
 
 public interface IMqttConnectionManager
 {

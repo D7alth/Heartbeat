@@ -1,9 +1,9 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MQTTnet;
-using src.MQTT.Configuration;
+using src.Worker.MQTT.Configuration;
 
-namespace src.MQTT.Connection;
+namespace src.Worker.MQTT.Connection;
 
 public sealed class MqttConnection(
     IOptions<MqttBrokerOptions> options,
