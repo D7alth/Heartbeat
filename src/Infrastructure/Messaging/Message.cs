@@ -1,4 +1,4 @@
-namespace src.MQTT;
+namespace src.Infrastructure.Messaging;
 
 public sealed record Message(
     string Content,

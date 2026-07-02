@@ -2,7 +2,7 @@ using System.Buffers;
 using System.Text;
 using MQTTnet;
 
-namespace src.MQTT;
+namespace src.Infrastructure.Messaging;
 
 public static class MessageFactory
 {
