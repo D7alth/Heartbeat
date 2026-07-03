@@ -1,5 +1,6 @@
 using InfluxDB.Client;
 using Microsoft.Extensions.Options;
+using src.Infrastructure.Configuration;
 
 namespace src.Infrastructure.Persistence.Connection;
 
