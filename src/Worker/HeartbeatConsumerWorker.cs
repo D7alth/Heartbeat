@@ -37,6 +37,7 @@ public sealed class HeartbeatConsumerWorker(
         client.ApplicationMessageReceivedAsync += async e =>
         {
             var message = MessageFactory.CreateMessageFromMqtt(e);
+            //TODO: Add something like Dispatcher or mediator pipeline to call our Features/useCase layer
             await e.AcknowledgeAsync(cancellationToken);
         };
         return Task.CompletedTask;
