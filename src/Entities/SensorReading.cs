@@ -1,43 +1,37 @@
-using src.Models.Structures;
+using src.Entities.ValueObjects;
 
 namespace src.Entities;
 
 public sealed class SensorReading
 {
-    public string DeviceId { get; private set; }
-    public string Firmware { get; private set; }
+    public Guid RecordId { get; private set; }
     public DateTime? RecordedAt { get; private set; }
     public TimeSpan Uptime { get; private set; }
     public int RssiDbm { get; private set; }
-    public SensorStruct Sensor { get; private set; }
-    public PayloadStruct Payload { get; private set; }
+    public SensorInformation Sensor { get; private set; }
+    public ContentPayload ContentPayload { get; private set; }
 
     private SensorReading(
-        string deviceId,
-        string firmware,
         DateTime? recordedAt,
         TimeSpan uptime,
         int rssiDbm,
-        SensorStruct sensor,
-        PayloadStruct payload
+        SensorInformation sensor,
+        ContentPayload contentPayload
     )
     {
-        DeviceId = deviceId;
-        Firmware = firmware;
+        RecordId = Guid.CreateVersion7();
         RecordedAt = recordedAt;
         Uptime = uptime;
         RssiDbm = rssiDbm;
         Sensor = sensor;
-        Payload = payload;
+        ContentPayload = contentPayload;
     }
 
     public static SensorReading Create(
-        string deviceId,
-        string firmware,
         DateTime recordedAt,
         TimeSpan uptime,
         int rssiDbm,
-        SensorStruct sensor,
-        PayloadStruct payload
-    ) => new(deviceId, firmware, recordedAt, uptime, rssiDbm, sensor, payload);
+        SensorInformation sensor,
+        ContentPayload contentPayload
+    ) => new(recordedAt, uptime, rssiDbm, sensor, contentPayload);
 }
