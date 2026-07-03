@@ -1,18 +1,18 @@
 using src.Models.Structures;
 
-namespace src.Models;
+namespace src.Entities;
 
-public class HumidityReading
+public sealed class SensorReading
 {
     public string DeviceId { get; private set; }
     public string Firmware { get; private set; }
     public DateTime? RecordedAt { get; private set; }
     public TimeSpan Uptime { get; private set; }
     public int RssiDbm { get; private set; }
-    public SensorStruct Sensor { get; private set; } = default;
-    public PayloadStruct Payload { get; private set; } = default;
+    public SensorStruct Sensor { get; private set; }
+    public PayloadStruct Payload { get; private set; }
 
-    private HumidityReading(
+    private SensorReading(
         string deviceId,
         string firmware,
         DateTime? recordedAt,
@@ -31,7 +31,7 @@ public class HumidityReading
         Payload = payload;
     }
 
-    public static HumidityReading Create(
+    public static SensorReading Create(
         string deviceId,
         string firmware,
         DateTime recordedAt,
