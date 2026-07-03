@@ -1,12 +1,11 @@
-﻿using InfluxDB.Client;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using src.Contracts;
-using src.Infrastructure;
-using src.Infrastructure.Connection;
-using src.MQTT;
-using src.MQTT.Configuration;
-using src.MQTT.Connection;
+using src.Infrastructure.Persistence;
+using src.Infrastructure.Persistence.Connection;
+using src.Worker;
+using src.Worker.MQTT.Configuration;
+using src.Worker.MQTT.Connection;
 
 var builder = Host.CreateApplicationBuilder();
 
@@ -23,7 +22,7 @@ builder
 builder.Services.AddSingleton<IDbClientFactory, DbClientFactory>();
 builder.Services.AddSingleton<IReadingRepository, InfluxDbService>();
 builder.Services.AddSingleton<IMqttConnectionManager, MqttConnection>();
-builder.Services.AddHostedService<MqttBrokerService>();
+builder.Services.AddHostedService<HeartbeatConsumerWorker>();
 
 var host = builder.Build();
 
