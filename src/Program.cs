@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using src.Contracts;
+using src.Entities.Repositories;
+using src.Infrastructure.Configuration;
 using src.Infrastructure.Persistence;
 using src.Infrastructure.Persistence.Connection;
 using src.Worker;
@@ -20,7 +21,7 @@ builder
     .ValidateOnStart();
 
 builder.Services.AddSingleton<IDbClientFactory, DbClientFactory>();
-builder.Services.AddSingleton<IReadingRepository, InfluxDbService>();
+builder.Services.AddSingleton<ISensorReadingRepository, InfluxDbService>();
 builder.Services.AddSingleton<IMqttConnectionManager, MqttConnection>();
 builder.Services.AddHostedService<HeartbeatConsumerWorker>();
 
