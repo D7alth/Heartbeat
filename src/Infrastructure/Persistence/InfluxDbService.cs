@@ -1,26 +1,27 @@
 using InfluxDB.Client.Api.Domain;
 using Microsoft.Extensions.Options;
-using src.Contracts;
+using src.Entities;
+using src.Entities.Repositories;
+using src.Infrastructure.Configuration;
 using src.Infrastructure.Persistence.Connection;
-using src.Models;
 
 namespace src.Infrastructure.Persistence;
 
 public sealed class InfluxDbService(
     IDbClientFactory dbClientFactory,
     IOptions<InfluxOptions> options
-) : IReadingRepository
+) : ISensorReadingRepository
 {
     private InfluxOptions InfluxOptions => options.Value;
 
-    public async Task SaveAsync(HumidityReading humidityReading)
+    public async Task SaveAsync(SensorReading sensorReading)
     {
         try
         {
             var influxDbClient = dbClientFactory.Create();
             var writeApi = influxDbClient.GetWriteApiAsync();
             await writeApi.WriteMeasurementAsync(
-                humidityReading,
+                sensorReading,
                 WritePrecision.Ns,
                 InfluxOptions.Bucket,
                 InfluxOptions.Organization
@@ -30,10 +31,5 @@ public sealed class InfluxDbService(
         {
             throw new Exception(ex.Message);
         }
-    }
-
-    public Task SaveAsync(PresenceReading presenceReading)
-    {
-        throw new NotImplementedException();
     }
 }
